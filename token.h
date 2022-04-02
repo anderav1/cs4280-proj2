@@ -40,11 +40,11 @@ const int finalStates[] = {
   -1
 };
 
-typedef struct token {
-  tokenID type;
+typedef struct token_t {
+  tokenID id;
   std::string str;
   int line;
-} token;
+} token_t;
 
 // Array of valid keywords
 const std::string keywords[] = {

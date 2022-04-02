@@ -31,8 +31,8 @@ std::string prefix = "";
 
 // Scan and return the next token
 // input -- input stream (either file or cin)
-token scanner(std::istream &input) {
-  token tkn;
+token_t scanner(std::istream &input) {
+  token_t tkn;
 
   int state = 0;
   int nextState = 0;
@@ -50,7 +50,7 @@ token scanner(std::istream &input) {
     if (input.eof()) col = 14;
     
     if (col == -1) {  // invalid char
-      tkn.type = ERR_TK;
+      tkn.id = ERR_TK;
       tkn.str = str + ch;
       tkn.line = line;
       
@@ -75,7 +75,7 @@ token scanner(std::istream &input) {
       }
       
       if (!valid) {
-        tkn.type = ERR_TK;
+        tkn.id = ERR_TK;
         tkn.str = str;
         tkn.line = line;
         
@@ -89,7 +89,7 @@ token scanner(std::istream &input) {
     }
     
     if (nextState >= 1000 || nextState < 0) { // final state, current char is lookahead
-      tkn.type = (tokenID)nextState;
+      tkn.id = (tokenID)nextState;
       
       if (nextState == 1006) {
         tkn.str = "EOF";
@@ -107,7 +107,7 @@ token scanner(std::istream &input) {
     if (ch == '\n') line++;
   }
   
-  tkn.type = ERR_TK;
+  tkn.id = ERR_TK;
   tkn.str = "Scanning error";
   tkn.line = line;
   

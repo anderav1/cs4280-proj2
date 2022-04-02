@@ -9,7 +9,7 @@
 
 #include "token.h"
 
-token scanner(std::istream &input);
+token_t scanner(std::istream &input);
 int getTableCol(char ch);
 
 
