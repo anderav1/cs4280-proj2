@@ -6,8 +6,8 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "scanner.h"
-#include "testScanner.h"
+#include "parser.h"
+#include "testTree.h"
 
 std::string fileName;
 
@@ -17,6 +17,8 @@ void printArgV(int, char*[]);
 int main(int argc, char* argv[]) {
   std::istream* fp;
   
+  // TODO: implement for parser and testTree
+  
   if (argc == 0 || argc > 2) {
     printf("Fatal: Improper usage\nUsage:");
     printArgV(argc, argv);
@@ -25,7 +27,9 @@ int main(int argc, char* argv[]) {
   else if (argc == 2) fp = new std::ifstream(argv[1]);
   else if (argc == 1) fp = &std::cin;
   
-  testScanner(*fp);
+  parser(*fp);
+  
+  //testScanner(*fp);
   
   if (fp != &std::cin) delete fp;
   

@@ -27,6 +27,7 @@ const int fsaTable[10][15] = {
 };
 
 int line = 1;
+//static int line = 1;
 std::string prefix = "";
 
 // Scan and return the next token
@@ -67,7 +68,6 @@ token_t scanner(std::istream &input) {
       bool valid = false;
       
       for (const std::string& keywd : keywords) {
-        //std::cout << "Comparing input " << str << " to valid keyword " << keywd << std::endl;
         if (keywd.compare(str) == 0) {
           valid = true;
           break;
@@ -99,6 +99,8 @@ token_t scanner(std::istream &input) {
       
       //if (nextState >= 1000 && !isspace(ch)) str = ch;
       
+      //std::cout << "Scanned \'" << tkn.str << "\' on line " << tkn.line << std::endl;
+      
       return tkn;
     }
     
@@ -106,6 +108,8 @@ token_t scanner(std::istream &input) {
     state = nextState;
     if (ch == '\n') line++;
   }
+  
+  // beyond this results in error
   
   tkn.id = ERR_TK;
   tkn.str = "Scanning error";

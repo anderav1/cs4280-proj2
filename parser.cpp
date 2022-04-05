@@ -9,33 +9,44 @@
 #include "token.h"
 
 token_t tkn;
+std::istream* fp;
 
-void parser() {
-  tkn = scanner();
+void parser(std::istream &input) {
+  fp = &input;
+  tkn = scanner(*fp);
   S();
-  if (tkn.id == EOF_TK) // continue
+  
+  std::cout << tkn.str << tkn.id << std::endl;
+  
+  if (tkn.id != EOF_TK) error();
+  else std::cout << "Successfully parsed program" << std::endl;
+  
+  /*
+  if (tkn.id == EOF_TK) {}
+    //std::cout << "Program parsed successfully." << std::endl;
   else error();
+  */
   
   return;
 }
 
 // Abort program on parsing error
 void error() {
-  std::cout << "Parsing error at token \'" << tkn << "\'" << std::endl;
+  std::cout << "Parsing error at " << tkn.id << " token \'" << tkn.str << "\' on line " << tkn.line << std::endl;
   exit(0);
 }
 
 // nonterminal functions
 
-void S() {
+void S() { // working
   if (tkn.id == KEYWD_TK && tkn.str == "Name") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == ID_TK) {
-      tkn = scanner();
+      tkn = scanner(*fp);
       if (tkn.id == KEYWD_TK && tkn.str == "Spot") {
-        tkn = scanner();
+        tkn = scanner(*fp);
         if (tkn.id == ID_TK) {
-          tkn = scanner();
+          tkn = scanner(*fp);
           R();
           E();
           
@@ -44,39 +55,38 @@ void S() {
       } else error();
     } else error();
   } else error();
-  
-  return;
 }
 
 void R() {
   if (tkn.id == KEYWD_TK && tkn.str == "Place") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     A();
     B();
     if (tkn.id == KEYWD_TK && tkn.str == "Home") {
-      tkn = scanner();
+      tkn = scanner(*fp);
       
       return;
     } else error();
   } else error();
 }
 
-void E() {
+void E() { // working
   if (tkn.id == KEYWD_TK && tkn.str == "Show") {
-    tkn = scanner();
-    if (tkn.id = ID_TK) {
-      tkn = scanner();
-      
+    tkn = scanner(*fp);
+    if (tkn.id == ID_TK) {
+      //std::cout << "E: parsed " << tkn.str << std::endl;
+      tkn = scanner(*fp);
+      //std::cout << "E: returning " << tkn.str << std::endl;
       return;
     } else error();
   } else error();
 }
 
-void A() {
+void A() { // working
   if (tkn.id == KEYWD_TK && tkn.str == "Name") {
-    tkn = scanner();
-    if (tkn.id = ID_TK) {
-      tkn = scanner();
+    tkn = scanner(*fp);
+    if (tkn.id == ID_TK) {
+      tkn = scanner(*fp);
       
       return;
     } else error();
@@ -85,22 +95,24 @@ void A() {
 
 void B() {
   if (tkn.id == OP_TK && tkn.str == ".") {
-    tkn = scanner();
+    tkn = scanner(*fp);
+    //std::cout << "B: calling C to parse " << tkn.str << std::endl;
     C();
     if (tkn.id == OP_TK && tkn.str == ".") {
-      tkn = scanner();
+      tkn = scanner(*fp);
+      //std::cout << "B: calling B to parse " << tkn.str << std::endl;
       B();
       
       return;
     } else error();
-  } else if (tkn.id == OP_TK || tkn.id == KEYWD_TK) { //TODO: test implementation
+  } else if ((tkn.id == OP_TK && (tkn.str == "/" || tkn.str == "{")) || (tkn.id == KEYWD_TK && (tkn.str == "Assign" || tkn.str == "Spot" || tkn.str == "Move" || tkn.str == "Flip" || tkn.str == "Show"))) {
+    //std::cout << "B: calling D to parse " << tkn.str << std::endl;
     D();
+    //std::cout << "B: calling B to parse " << tkn.str << std::endl;
     B();
     
     return;
-  } else {  // nullable
-    return;
-  }
+  } else return;  // nullable
 }
 
 void C() {
@@ -140,6 +152,7 @@ void D() {
       
       return;
     } else if (tkn.str == "Show") {
+      std::cout << "D: calling E to parse " << tkn.str << std::endl;
       E();
       
       return;
@@ -149,21 +162,21 @@ void D() {
 
 void F() {
   if (tkn.id == OP_TK && tkn.str == "{") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == KEYWD_TK) {
       if (tkn.str == "If") {
-        tkn = scanner();
+        tkn = scanner(*fp);
         if (tkn.id == ID_TK) {
-          tkn = scanner();
+          tkn = scanner(*fp);
           T();
           W();
           D();
           // finish after if-statement
         } else error();
       } else if (tkn.str == "Do") {
-        tkn = scanner();
-        if (tkn.id == "KEYWD_TK" && tkn.str == "Again") {
-          tkn = scanner();
+        tkn = scanner(*fp);
+        if (tkn.id == KEYWD_TK && tkn.str == "Again") {
+          tkn = scanner(*fp);
           D();
           T();
           W();
@@ -175,7 +188,7 @@ void F() {
   
   // closing brace for both productions
   if (tkn.id == OP_TK && tkn.str == "}") {
-    tkn = scanner();
+    tkn = scanner(*fp);
             
     return;
   } else error();
@@ -183,11 +196,11 @@ void F() {
 
 void G() {
   if (tkn.id == KEYWD_TK && tkn.str == "Here") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == NUM_TK) {
-      tkn = scanner();
+      tkn = scanner(*fp);
       if (tkn.id == KEYWD_TK && tkn.str == "There") {
-        tkn = scanner();
+        tkn = scanner(*fp);
         
         return;
       } else error();
@@ -198,7 +211,7 @@ void G() {
 void T() {
   if (tkn.id == OP_TK) {
     if (tkn.str == "<<" || tkn.str == "<-") {
-      tkn = scanner();
+      tkn = scanner(*fp);
       
       return;
     } else error();
@@ -208,7 +221,7 @@ void T() {
 void V() {
   if (tkn.id == OP_TK) {
     if (tkn.str == "+" || tkn.str == "%" || tkn.str == "&") {
-      tkn = scanner();
+      tkn = scanner(*fp);
       
       return;
     } else error();
@@ -217,7 +230,7 @@ void V() {
 
 void H() {
   if (tkn.id == OP_TK && tkn.str == "/") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     Z();
     
     return;
@@ -226,9 +239,9 @@ void H() {
 
 void J() {
   if (tkn.id == KEYWD_TK && tkn.str == "Assign") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == ID_TK) {
-      tkn = scanner();
+      tkn = scanner(*fp);
       D();
       
       return;
@@ -239,26 +252,26 @@ void J() {
 void K() {
   if (tkn.id == KEYWD_TK) {
     if (tkn.str == "Spot") {
-      tkn = scanner();
+      tkn = scanner(*fp);
       if (tkn.id == NUM_TK) {
-        tkn = scanner();
+        tkn = scanner(*fp);
         if (tkn.id == KEYWD_TK && tkn.str == "Show") {
-          tkn = scanner();
+          tkn = scanner(*fp);
           if (tkn.id == NUM_TK) {
-            tkn = scanner();
+            tkn = scanner(*fp);
             
             return;
           } else error();
         } else error();
       } else error();
     } else if (tkn.str == "Move") {
-      tkn = scanner();
+      tkn = scanner(*fp);
       if (tkn.id == ID_TK) {
-        tkn = scanner();
+        tkn = scanner(*fp);
         if (tkn.id == KEYWD_TK && tkn.str == "Show") {
-          tkn = scanner();
+          tkn = scanner(*fp);
           if (tkn.id == ID_TK) {
-            tkn = scanner();
+            tkn = scanner(*fp);
             
             return;
           } else error();
@@ -270,9 +283,9 @@ void K() {
 
 void L() {
   if (tkn.id == KEYWD_TK && tkn.str == "Flip") {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == ID_TK) {
-      tkn = scanner();
+      tkn = scanner(*fp);
       
       return;
     } else error();
@@ -281,10 +294,10 @@ void L() {
 
 void W() {
   if (tkn.id == NUM_TK) {
-    tkn = scanner();
+    tkn = scanner(*fp);
     if (tkn.id == OP_TK) {
       if (tkn.str == ".") {
-        tkn = scanner();
+        tkn = scanner(*fp);
         
         return;
       } else {
@@ -298,11 +311,11 @@ void W() {
 
 void Z() {
   if (tkn.id == ID_TK) {
-    tkn = scanner();
+    tkn = scanner(*fp);
     
     return;
   } else if (tkn.id == NUM_TK) {
-    tkn = scanner();
+    tkn = scanner(*fp);
     
     return;
   } else error();  

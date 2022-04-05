@@ -6,7 +6,7 @@
 #define PARSER_H
 
 
-void parser();
+void parser(std::istream &input);
 void error();
 
 // nonterminals
