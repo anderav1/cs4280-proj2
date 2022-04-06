@@ -1,0 +1,9 @@
+// Lexi Anderson
+// CS4280, Proj 2
+// node.cpp
+
+#include "node.h"
+
+node_t* getNode(char label) {
+  
+}

@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
   
   if (fp != &std::cin) delete fp;
   
-  std::cout << "Finished scanning" << std::endl;
+  std::cout << "Finished parsing" << std::endl;
   
   return 0;
 }

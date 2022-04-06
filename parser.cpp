@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "node.h"
 #include "parser.h"
 #include "scanner.h"
 #include "token.h"
@@ -11,23 +12,19 @@
 token_t tkn;
 std::istream* fp;
 
-void parser(std::istream &input) {
+node_t* parser(std::istream &input) {
+  node_t* root;
+
   fp = &input;
   tkn = scanner(*fp);
-  S();
+  root = S();
   
   std::cout << tkn.str << tkn.id << std::endl;
   
   if (tkn.id != EOF_TK) error();
   else std::cout << "Successfully parsed program" << std::endl;
   
-  /*
-  if (tkn.id == EOF_TK) {}
-    //std::cout << "Program parsed successfully." << std::endl;
-  else error();
-  */
-  
-  return;
+  return root;
 }
 
 // Abort program on parsing error
@@ -36,9 +33,19 @@ void error() {
   exit(0);
 }
 
+// Create an empty node with label
+node_t* getNode(char label) {
+  node_t* node = malloc(sizeof(node_t));
+  node.label = label;
+  // all ptr members should be null
+  
+  return node;
+}
+
 // nonterminal functions
 
-void S() { // working
+node_t* S() {
+  node_t* node = getNode(S);
   if (tkn.id == KEYWD_TK && tkn.str == "Name") {
     tkn = scanner(*fp);
     if (tkn.id == ID_TK) {
@@ -309,7 +316,10 @@ void W() {
   }
 }
 
+// TODO: implement tree node
 void Z() {
+  node_t* node = getNode('Z');
+  
   if (tkn.id == ID_TK) {
     tkn = scanner(*fp);
     

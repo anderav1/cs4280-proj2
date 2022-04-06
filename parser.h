@@ -5,9 +5,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "node.h"
 
-void parser(std::istream &input);
+node_t* parser(std::istream &input);
 void error();
+node_t* getNode(char);
 
 // nonterminals
 void S();
