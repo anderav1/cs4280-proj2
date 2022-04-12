@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "node.h"
 #include "parser.h"
 #include "testTree.h"
 
@@ -27,11 +28,11 @@ int main(int argc, char* argv[]) {
   else if (argc == 2) fp = new std::ifstream(argv[1]);
   else if (argc == 1) fp = &std::cin;
   
-  parser(*fp);
-  
-  //testScanner(*fp);
+  node_t* root = parser(*fp);
+  printTree(root, 0);
   
   if (fp != &std::cin) delete fp;
+  deleteTree(root);
   
   std::cout << "Finished parsing" << std::endl;
   

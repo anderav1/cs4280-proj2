@@ -8,14 +8,18 @@
 #include "token.h"
 
 typedef struct node_t {
-  char label;
-  token_t *tkn1 = nullptr, *tkn2 = nullptr, *tkn3 = nullptr, *tkn4 = nullptr;
-  node_t *child1 = nullptr, *child2 = nullptr, *child3 = nullptr;
+  std::string label;
+  std::string decor = "";
+  bool isLeaf = false;
+  // children nodes
+  node_t* ch1 = nullptr;
+  node_t* ch2 = nullptr;
+  node_t* ch3 = nullptr;
+  node_t* ch4 = nullptr;
+  node_t* ch5 = nullptr;
+  node_t* ch6 = nullptr;
+  node_t* ch7 = nullptr;
 } node_t;
-
-typedef struct {
-  node_t *root;
-} tree_t;
 
 
 #endif
